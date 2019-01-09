@@ -13,6 +13,7 @@ const tagDb = require("../data/helpers/tagDb");
 // middleware - global
 server.use(express.json());
 server.use(morgan("short"));
+server.use(helmet());
 server.use(cors());
 
 function upperCase(req, res, next) {
@@ -106,6 +107,19 @@ server.put("/api/users/:id", upperCase, async (req, res) => {
     });
   }
 });
+
+
+// routes - posts
+server.get("/api/posts", async (req, res) => {
+    try {
+      const posts = await postDb.get();
+      res.json(posts);
+    } catch (err) {
+      res
+        .status(500)
+        .json({ message: "The posts cannot be retrieved from the database" });
+    }
+  });
 
 
 module.exports = server;
