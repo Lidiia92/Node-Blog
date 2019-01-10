@@ -139,4 +139,53 @@ server.get("/api/posts", async (req, res) => {
     }
   });  
 
+  server.post("/api/addpost/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const post = req.body;
+  
+    try {
+      const user = await postDb.get(userId);
+      if (!user) {
+        res.status(404).json({ message: "User was not found." });
+      } else {
+        const newPost = await postDb.insert(post);
+        res.json(newPost);
+      }
+    } catch (err) {
+      res.status(500).json({ message: "Could not add a new post." });
+    }
+  });
+  
+  server.delete("/api/posts/:id", async (req, res) => {
+    const { postId } = req.params;
+  
+    try {
+      const post = await postDb.remove(postId);
+      if (!post) {
+        res.status(404).json({ message: "The post does not exist." });
+      } else {
+        res.json(post);
+      }
+    } catch (err) {
+      res.status(500).json({ message: "Could not delete post." });
+    }
+  });
+  
+  server.put("/api/posts/:id", async (req, res) => {
+    const { postId } = req.params;
+    const post = req.body;
+  
+    try {
+      const updatedPost = await postDb.update(postId);
+      if (!updatedPost) {
+        res
+          .status(404)
+          .json({ message: "Cannot update a post that doesn't exist." });
+      } else {
+        res.json(updatedPost);
+      }
+    } catch (err) {
+      res.status(500).json({ message: "Could not update post." });
+    }
+  });
 module.exports = server;
